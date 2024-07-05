@@ -1,0 +1,3 @@
+D:/ALL MY PROJECTS/Mini-Ray-Marching/cmake-build-debug/CMakeFiles/Mini_Ray_Marching.dir
+D:/ALL MY PROJECTS/Mini-Ray-Marching/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/ALL MY PROJECTS/Mini-Ray-Marching/cmake-build-debug/CMakeFiles/rebuild_cache.dir
