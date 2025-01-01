@@ -22,19 +22,19 @@ int checkPos(int x, int y, double angle) {
        
     double newX, newY;
     int normX, normY, i;
-    for (i = 0; i < 200; i++) {
+    for (i = 0; i < LENGTH; i++) {
         for (int j = 0; j < 16; j++) {
             for (int k = 0; k < 20; k++) {
 
                 if (locBlock[j][k] == 1) {
 
-                    normX = k * 25;               // странно работает, но работает 
+                    normX = k * 25; 
                     normY = 400 - j * 25;
 
                     newX = mouseX + i * cos(angle);
                     newY = mouseY + i * sin(angle);
 
-                    if (newY >= normY - 25 && newY <= normY && newX >= normX && newX <= normX + 25) {
+                    if (newY >= normY - 26 && newY <= normY && newX >= normX && newX <= normX + 26) {
                         return i;
                     }
                 }
@@ -54,11 +54,11 @@ void drawLight() {
     glEnd();
 
 
-    int degrees = 0;                // рисование круга вокруг мыши
+    int degrees = 0;                // drawing circle
     double newX, newY;
 
     glColor3f(1, 0, 0);
-    glPointSize(2);
+
     glBegin(GL_LINES);
     for (int i = 0; i < CNTPOINTS; i++) {
         double angle = degrees * 3.1415 / 180;
@@ -76,11 +76,7 @@ void drawLight() {
         degrees += 360 / CNTPOINTS;
     }
     glEnd();
-    glColor3f(1, 1, 1);
-    glPointSize(1);
-
-    
-    
+    glColor3f(1, 1, 1);    
 }
 
 
@@ -536,7 +532,7 @@ void mouseMotion(int x, int y) {
         mouseY = (float)(windowHeight - y);
     }
 
-    printf("%d %d\n", x, y);
+    // printf("%d %d\n", x, y);  // debug printf
 }
 
 void setupProjection() {
@@ -555,16 +551,19 @@ void keyboard(unsigned char key, int x, int y) {
     }
 }
 
+
+
+
 int main(int argc, char** argv) {
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(500, 400);
     glutInitWindowPosition(600, 300);
-    glutCreateWindow("Mini-Ray_Casting");
+    glutCreateWindow("Mini-Ray-Casting");
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glutDisplayFunc(display);
-    // glutSetCursor(GLUT_CURSOR_NONE);  // ДЛЯ ТОГО, ЧТОБЫ СКРЫВАТЬ МЫШЬ!!!!!!
+    // glutSetCursor(GLUT_CURSOR_NONE);  // hide a mouse !!!!!!
     glutMouseFunc(mouseClick);
     glutPassiveMotionFunc(mouseMotion);
     glutKeyboardFunc(keyboard);
