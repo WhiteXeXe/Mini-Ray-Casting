@@ -1,8 +1,12 @@
 #include <GL/freeglut.h>
 #include "stdio.h"
 #include <stdbool.h>
+#include <math.h>
 
 #define ESCAPE '\033'
+#define CNTPOINTS 180
+#define LENGTH 200
+
 float mouseX = 0.0f;
 float mouseY = 0.0f;
 bool flagDrawDetails = 0;
@@ -10,7 +14,76 @@ int chooseBlock = 0; // 0 - block
                      // 1 - horizontal line
                      // 2 - vertical line
 int start_or_not = 0;
-int locBlock[16][20] = {0};
+int locBlock[16][20] = { 0 };
+
+
+
+int checkPos(int x, int y, double angle) {
+       
+    double newX, newY;
+    int normX, normY, i;
+    for (i = 0; i < 200; i++) {
+        for (int j = 0; j < 16; j++) {
+            for (int k = 0; k < 20; k++) {
+
+                if (locBlock[j][k] == 1) {
+
+                    normX = k * 25;               // странно работает, но работает 
+                    normY = 400 - j * 25;
+
+                    newX = mouseX + i * cos(angle);
+                    newY = mouseY + i * sin(angle);
+
+                    if (newY >= normY - 25 && newY <= normY && newX >= normX && newX <= normX + 25) {
+                        return i;
+                    }
+                }
+            }
+        }
+    }
+    return i;
+}
+
+
+
+void drawLight() {
+
+ 
+    glBegin(GL_POINTS);
+    glVertex3f(mouseX, mouseY, 0);
+    glEnd();
+
+
+    int degrees = 0;                // рисование круга вокруг мыши
+    double newX, newY;
+
+    glColor3f(1, 0, 0);
+    glPointSize(2);
+    glBegin(GL_LINES);
+    for (int i = 0; i < CNTPOINTS; i++) {
+        double angle = degrees * 3.1415 / 180;
+
+        glVertex3f(mouseX, mouseY, 0);
+
+        int size = checkPos(mouseX, mouseY, angle);
+
+        newX = mouseX + size * cos(angle);
+        newY = mouseY + size * sin(angle);
+
+
+        glVertex3f(newX, newY, 0);
+
+        degrees += 360 / CNTPOINTS;
+    }
+    glEnd();
+    glColor3f(1, 1, 1);
+    glPointSize(1);
+
+    
+    
+}
+
+
 
 void drawMinLines() {
     glBegin(GL_LINES);
@@ -224,7 +297,8 @@ void drawMapBlocks() {
             int yCoord = (300 - mouseY) / 12.5;
             if (locBlock[yCoord][xCoord] == 1) {
                 locBlock[yCoord][xCoord] = 0;
-            } else {
+            }
+            else {
                 locBlock[yCoord][xCoord] = 1;
             }
         }
@@ -241,7 +315,8 @@ void drawMapBlocks() {
                     locBlock[yCoord][xCoord] = 0;
                     locBlock[yCoord][xCoord + 1] = 0;
                     locBlock[yCoord][xCoord - 1] = 0;
-                } else {
+                }
+                else {
                     locBlock[yCoord][xCoord] = 1;
                     locBlock[yCoord][xCoord + 1] = 1;
                     locBlock[yCoord][xCoord - 1] = 1;
@@ -261,7 +336,8 @@ void drawMapBlocks() {
                     locBlock[yCoord][xCoord] = 0;
                     locBlock[yCoord + 1][xCoord] = 0;
                     locBlock[yCoord - 1][xCoord] = 0;
-                } else {
+                }
+                else {
                     locBlock[yCoord][xCoord] = 1;
                     locBlock[yCoord + 1][xCoord] = 1;
                     locBlock[yCoord - 1][xCoord] = 1;
@@ -417,6 +493,8 @@ bool checkZoneForMenu(int x, int y) {
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
 
+ 
+ 
     if (start_or_not == 0) {
         drawMinMapANDButton();
         drawMinLines();
@@ -427,6 +505,7 @@ void display() {
     }
     if (start_or_not == 1) {
         drawFullMap();
+        drawLight();
     }
 
     glutSwapBuffers();
@@ -436,17 +515,27 @@ void mouseClick(int button, int state, int x, int y) {
     if (checkZoneForMenu(x, y) == 1 && state == GLUT_DOWN) {
 
         int windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
-        mouseX = (float) x;
-        mouseY = (float) (windowHeight - y);
+        mouseX = (float)x;
+        mouseY = (float)(windowHeight - y);
 
         flagDrawDetails = 1;
         glutPostRedisplay();
-    } else {
+    }
+    else {
         if (state == GLUT_UP) flagDrawDetails = 0;
     }
 }
 
 void mouseMotion(int x, int y) {
+
+    glutPostRedisplay();
+
+    if (start_or_not == 1) {
+        int windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
+        mouseX = x;
+        mouseY = (float)(windowHeight - y);
+    }
+
     printf("%d %d\n", x, y);
 }
 
@@ -459,10 +548,10 @@ void setupProjection() {
 
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
-        case ESCAPE:
-            start_or_not = 0;
-            glutPostRedisplay();
-            break;
+    case ESCAPE:
+        start_or_not = 0;
+        glutPostRedisplay();
+        break;
     }
 }
 
@@ -475,6 +564,7 @@ int main(int argc, char** argv) {
     glutCreateWindow("Mini-Ray_Casting");
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glutDisplayFunc(display);
+    // glutSetCursor(GLUT_CURSOR_NONE);  // ДЛЯ ТОГО, ЧТОБЫ СКРЫВАТЬ МЫШЬ!!!!!!
     glutMouseFunc(mouseClick);
     glutPassiveMotionFunc(mouseMotion);
     glutKeyboardFunc(keyboard);
