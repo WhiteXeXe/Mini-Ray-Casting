@@ -1,4 +1,4 @@
-# Mini-Ray-Marching.
+# Mini-Ray-Casting.
 
 This is a small project that shows how light works with objects using Ray-Casting technology. In this program, you can simulate a small map in which you can easily look at the operation of the light. To exit the viewing mode and enter the map creation mode, press the `esc` key.
 
